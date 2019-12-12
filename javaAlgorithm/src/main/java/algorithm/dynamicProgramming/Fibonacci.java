@@ -1,4 +1,4 @@
-package algorithm.dynamicPrograming;
+package algorithm.dynamicProgramming;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -6,7 +6,7 @@ import java.util.Map;
 /**
  * 1、1、2、3、5、8、13、21、34
  * 
- * classic problem to learn dynamic programing
+ * classic problem to learn dynamic programming
  * 	
  * we will solve it with both bottom up tabulation manner and top down memoizatation manner
  * 
