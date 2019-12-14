@@ -1,7 +1,9 @@
 package algorithm.backtracking;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * 
@@ -40,16 +42,19 @@ public class RatAtMazeFourDirection {
 	 */
 	public List<Point> solve(int[][] maze) {
 		List<Point> steps = new ArrayList<Point>();
+		Set<Point> visited = new HashSet<Point>();
 		//first step
-		steps.add(new Point(0, 0));
+		Point first = new Point(0, 0);
+		steps.add(first);
+		visited.add(first);
 		//then using backtracking to move forward
-		if (tryMove(maze, steps)) {
+		if (tryMove(maze, steps, visited)) {
 			return steps;
 		}
 		return null;
 	}
 	
-	public boolean tryMove(int[][] maze, List<Point> steps) {
+	public boolean tryMove(int[][] maze, List<Point> steps, Set<Point> visited) {
 		Point prev = steps.get(steps.size() - 1);
 		if (prev.x == maze.length - 1 && prev.y == maze.length - 1) {
 			//already reach the exit of maze
@@ -58,13 +63,15 @@ public class RatAtMazeFourDirection {
 		//try every available move
 		for (MoveWay moveWay : MoveWay.values()) {
 			Point next = moveWay.move(prev);
-			if (check(maze, next, steps)) {
+			if (check(maze, next, visited)) {
 				steps.add(next);
-				if (tryMove(maze, steps)) {
+				visited.add(next);
+				if (tryMove(maze, steps, visited)) {
 					return true;
 				} else {
 					//backtracking
-					steps.remove(steps.size() - 1);
+					Point bad = steps.remove(steps.size() - 1);
+					visited.remove(bad);
 				}
 			}
 		}
@@ -72,11 +79,11 @@ public class RatAtMazeFourDirection {
 		return false;
 	}
 	
-	private boolean check(int[][] maze, Point p, List<Point> steps) {
+	private boolean check(int[][] maze, Point p, Set<Point> visited) {
 		return p.x >= 0 && p.x < maze.length 
 				&& p.y >= 0 && p.y < maze.length 
 				&& maze[p.x][p.y] == OK 
-				&& !steps.contains(p); //check if repeat
+				&& !visited.contains(p); //check if repeat
 	}
 
 	static class Point {
