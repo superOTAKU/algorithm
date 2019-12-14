@@ -73,7 +73,6 @@ public class RatAtMazeFourDirection {
 	}
 	
 	private boolean check(int[][] maze, Point p, List<Point> steps) {
-		//you can just move right or move down, so will not repeat with prev steps
 		return p.x >= 0 && p.x < maze.length 
 				&& p.y >= 0 && p.y < maze.length 
 				&& maze[p.x][p.y] == OK 
