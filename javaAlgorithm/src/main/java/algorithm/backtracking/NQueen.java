@@ -1,8 +1,5 @@
 package algorithm.backtracking;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * 
  * the famous n queen problem
@@ -36,118 +33,60 @@ public class NQueen {
 	 */
 	public int[][] solve(int n) {
 		int[][] table = new int[n][n];
-		List<Integer> steps = new ArrayList<Integer>();
-		//从上往下走，第一行的每一列都去尝试走
-		for (int col = 0; col < n; col++) {
-			table[0][col] = VISITED;
-			steps.add(col);
-			if (tryMove(table, steps, 1)) {
-				return table;
-			} else {
-				//回溯
-				table[0][col] = FREE;
-				steps.remove(steps.size() - 1);
-			}
+		if (tryMove(table, 0)) {
+			return table;
 		}
-		return table;
+		throw new IllegalStateException("no solution found");
 	}
 	
-	private boolean tryMove(int[][] table, List<Integer> steps, int currentRow) {
-		if (currentRow == table.length) {
+	/**
+	 * try to move from row0 to rowN, check conflict, and backtracking 
+	 */
+	public boolean tryMove(int[][] table, int row) {
+		if (row == table.length) {
 			return true;
 		}
+		
 		for (int col = 0; col < table.length; col++) {
-			if (check(table, steps, currentRow, col)) {
-				table[currentRow][col] = VISITED;
-				steps.add(col);
-				if (tryMove(table, steps, currentRow + 1)) {
+			if (check(table, row, col)) {
+				table[row][col] = VISITED;
+				if (tryMove(table, row + 1)) {
 					return true;
 				} else {
-					table[currentRow][col] = FREE;
-					steps.remove(steps.size() - 1);
+					//backtracking
+					table[row][col] = FREE;
 				}
-			} 
+			}
 		}
+		
 		return false;
 	}
 	
-	private boolean check(int[][] table, List<Integer> steps, int currentRow, int currentCol) {
-		int[][] t = new int[table.length][table.length];
-		for (int i = 0; i < table.length; i++) {
-			t[i] = table[i].clone();
-		}
-		for (int row = 0; row < currentRow; row++) {
-			int col = steps.get(row);
-			//填充不可放置的区域
-			
-			//竖线
-			for (int r = 0; r < table.length; r++) {
-				t[r][col] = -1;
-			}
-			
-			//从左上往右下的斜线
-			int r = row, c = col;
-			for (int i = 1; i > 0; i++) {
-				int rt = r - i, ct = c - i;
-				boolean ok = false;
-				if (rt >= 0 && ct >= 0) {
-					t[rt][ct] = -1;
-					ok = true;
-				}
-				int rb = r + i, cb = c + i;
-				if (rb < table.length && cb < table.length) {
-					t[rb][cb] = -1;
-					ok = true;
-				}
-				if (!ok) {
-					break;
-				}
-			}
-			
-			//从右上往左下的竖线
-			for (int i = 1; i > 0; i++) {
-				int rt = r - i, ct = c + i;
-				boolean ok = false;
-				if (rt >= 0 && ct < table.length) {
-					t[rt][ct] = -1;
-					ok = true;
-				}
-				int rb = r + i, cb = c - i;
-				if (rb < table.length && cb >= 0) {
-					t[rb][cb] = -1;
-					ok = true;
-				}
-				if (!ok) {
-					break;
-				}
+	private boolean check(int[][] table, int row, int col) {
+		int i,j;
+		
+		//check vertical repeat
+		for(i = 0; i < row; i++) {
+			if (table[i][col] == VISITED) {
+				return false;
 			}
 		}
-		return t[currentRow][currentCol] != -1;
+		
+		//check leftTop
+		for (i = row - 1, j = col - 1; i >= 0 && j >= 0; i--, j--) {
+			if (table[i][j] == VISITED) {
+				return false;
+			}
+		}
+		
+		//check rightTop
+		for (i = row - 1, j = col + 1; i >= 0 && j < table.length; i--, j++) {
+			if (table[i][j] == VISITED) {
+				return false;
+			}
+		}
+			
+		return true;
 	}
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-		
 }
