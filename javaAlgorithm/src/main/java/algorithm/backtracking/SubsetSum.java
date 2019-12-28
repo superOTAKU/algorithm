@@ -15,55 +15,42 @@ public class SubsetSum {
 	
 	public static void main(String[] args) {
 		Set<Integer> set = new HashSet<Integer>();
-		set.addAll(Arrays.asList(1, 3, 5,  7));
+		set.addAll(Arrays.asList(1, 3, 5, 7));
 		System.out.println(new SubsetSum().solve(set, 10));
 	}
 	
-	public Set<Integer> solve(Set<Integer> set, int sum) {
+	public Set<Integer> solve(Set<Integer> set, int targetSum) {
 		Set<Integer> subset = new HashSet<Integer>();
 		int[] setArr = new int[set.size()];
 		int i = 0;
 		for (int e : set) {
 			setArr[i++] = e;
 		}
-		if (doSolve(setArr, subset, -1, sum)) {
+		if (doSolve(setArr, -1, subset, 0, targetSum)) {
 			return subset;
 		}
 		throw new IllegalStateException("no solution found");
 	}
 	
-	private boolean doSolve(int[] set, Set<Integer> answers, int idx, int sum) {
-		if (sumOf(answers) == sum) {
+	private boolean doSolve(int[] set, int idx, Set<Integer> subset, int currentSum, int targetSum) {
+		if (currentSum == targetSum) {
 			return true;
 		}
 		//try every element after current element
 		for (int i = idx + 1; i < set.length; i++) {
-			if (check(answers, set[i], i, set, sum)) {
-				answers.add(set[i]);
-				if (doSolve(set, answers, i, sum)) {
+			if (currentSum + set[i] <= targetSum) {
+				subset.add(set[i]);
+				currentSum += set[i];
+				if (doSolve(set, i, subset, currentSum, targetSum)) {
 					return true;
 				} else {
 					//backtracking
-					answers.remove(set[i]);
+					subset.remove(set[i]);
+					currentSum -= set[i];
 				}
 			}
 		}
 		return false;
 	}
 	
-	private boolean check(Set<Integer> answers, int newElement, int idx, int[] set, int sum) {
-		int actual = sumOf(answers) + newElement;
-		if (actual == sum) {
-			return true;
-		}
-		if (actual < sum && idx < set.length) {
-			return true;
-		}
-		return false;
-	}
-	
-	private int sumOf(Set<Integer> answers) {
-		return answers.stream().reduce((a, b) -> a + b).orElse(0);
-	}
-
 }
